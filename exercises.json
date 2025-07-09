@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Push-up",
+    "description": "A classic bodyweight exercise that works the chest, shoulders, and triceps.",
+    "muscles": ["chest", "shoulders", "triceps"]
+  },
+  {
+    "id": 2,
+    "name": "Squat",
+    "description": "A fundamental lower body exercise that targets the quadriceps, hamstrings, and glutes.",
+    "muscles": ["quadriceps", "hamstrings", "glutes"]
+  },
+  {
+    "id": 3,
+    "name": "Plank",
+    "description": "An isometric core strength exercise that involves maintaining a position similar to a push-up for the maximum possible time.",
+    "muscles": ["abdominals", "obliques", "back"]
+  },
+  {
+    "id": 4,
+    "name": "Jumping Jacks",
+    "description": "A full-body exercise that can be done as a warm-up.",
+    "muscles": ["full body", "cardio"]
+  }
+]

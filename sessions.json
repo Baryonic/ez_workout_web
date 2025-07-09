@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Full Body Blast",
+    "exercises": [
+      {
+        "exercise_id": 4,
+        "duration_seconds": 60
+      },
+      {
+        "exercise_id": 2,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 1,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 3,
+        "duration_seconds": 45,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "test",
+    "exercises": [
+      {
+        "exercise_id": 1,
+        "sets": 3,
+        "reps": 10
+      }
+    ]
+  }
+]
