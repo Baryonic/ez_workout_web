@@ -24,12 +24,454 @@
     ]
   },
   {
-    "name": "test",
+    "name": "Beginner Full Body A",
     "exercises": [
       {
+        "exercise_id": 2,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 5,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 11,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 19,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 13,
+        "reps": 12,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Beginner Full Body B",
+    "exercises": [
+      {
+        "exercise_id": 28,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 13,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 6,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 17,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 26,
+        "reps": 12,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Intermediate Full Body A",
+    "exercises": [
+      {
+        "exercise_id": 2,
+        "reps": 8,
+        "sets": 3
+      },
+      {
+        "exercise_id": 5,
+        "reps": 8,
+        "sets": 3
+      },
+      {
+        "exercise_id": 11,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 19,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 30,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 39,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 24,
+        "reps": 15,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Intermediate Full Body B",
+    "exercises": [
+      {
+        "exercise_id": 28,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 16,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 6,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 25,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 21,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 43,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 36,
+        "reps": 15,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Advanced Full Body 1",
+    "exercises": [
+      {
+        "exercise_id": 2,
+        "reps": 5,
+        "sets": 4
+      },
+      {
+        "exercise_id": 11,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 19,
+        "reps": 6,
+        "sets": 3
+      },
+      {
+        "exercise_id": 32,
+        "reps": 8,
+        "sets": 3
+      },
+      {
+        "exercise_id": 46,
+        "reps": 12,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Advanced Full Body 2",
+    "exercises": [
+      {
+        "exercise_id": 28,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 6,
+        "reps": 10,
+        "sets": 4
+      },
+      {
+        "exercise_id": 34,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 15,
+        "reps": 10,
+        "sets": 4
+      },
+      {
         "exercise_id": 1,
-        "sets": 3,
-        "reps": 10
+        "reps": 20,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Advanced Full Body 3",
+    "exercises": [
+      {
+        "exercise_id": 37,
+        "duration_seconds": 300
+      },
+      {
+        "exercise_id": 14,
+        "reps": 10,
+        "sets": 4
+      },
+      {
+        "exercise_id": 7,
+        "reps": 12,
+        "sets": 4
+      },
+      {
+        "exercise_id": 26,
+        "reps": 20,
+        "sets": 3
+      },
+      {
+        "exercise_id": 3,
+        "duration_seconds": 60,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Push Day",
+    "exercises": [
+      {
+        "exercise_id": 5,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 6,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 19,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 21,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 43,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 44,
+        "reps": 12,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Pull Day",
+    "exercises": [
+      {
+        "exercise_id": 11,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 13,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 17,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 18,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 38,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 40,
+        "reps": 12,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Leg Day",
+    "exercises": [
+      {
+        "exercise_id": 2,
+        "reps": 8,
+        "sets": 4
+      },
+      {
+        "exercise_id": 25,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 28,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 30,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 36,
+        "reps": 15,
+        "sets": 4
+      }
+    ]
+  },
+  {
+    "name": "Upper Body",
+    "exercises": [
+      {
+        "exercise_id": 5,
+        "reps": 8,
+        "sets": 3
+      },
+      {
+        "exercise_id": 11,
+        "reps": 8,
+        "sets": 3
+      },
+      {
+        "exercise_id": 19,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 13,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 39,
+        "reps": 12,
+        "sets": 2
+      },
+      {
+        "exercise_id": 43,
+        "reps": 12,
+        "sets": 2
+      }
+    ]
+  },
+  {
+    "name": "Lower Body",
+    "exercises": [
+      {
+        "exercise_id": 2,
+        "reps": 10,
+        "sets": 3
+      },
+      {
+        "exercise_id": 28,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 26,
+        "reps": 12,
+        "sets": 3
+      },
+      {
+        "exercise_id": 32,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 36,
+        "reps": 20,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Core Focus",
+    "exercises": [
+      {
+        "exercise_id": 3,
+        "duration_seconds": 60,
+        "sets": 3
+      },
+      {
+        "exercise_id": 45,
+        "reps": 20,
+        "sets": 3
+      },
+      {
+        "exercise_id": 46,
+        "reps": 15,
+        "sets": 3
+      },
+      {
+        "exercise_id": 47,
+        "reps": 20,
+        "sets": 3
+      },
+      {
+        "exercise_id": 49,
+        "reps": 20,
+        "sets": 3
+      }
+    ]
+  },
+  {
+    "name": "Cardio & Core",
+    "exercises": [
+      {
+        "exercise_id": 4,
+        "duration_seconds": 120
+      },
+      {
+        "exercise_id": 37,
+        "duration_seconds": 120
+      },
+      {
+        "exercise_id": 3,
+        "duration_seconds": 60,
+        "sets": 2
+      },
+      {
+        "exercise_id": 49,
+        "reps": 25,
+        "sets": 2
+      },
+      {
+        "exercise_id": 46,
+        "reps": 20,
+        "sets": 2
       }
     ]
   }
