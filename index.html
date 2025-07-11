@@ -8,19 +8,26 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>EZ Workout</h1>
+        <aside class="sidebar">
+            <header>
+                <h1 class="sidebar-title">EZ Workout</h1>
+                <button id="sidebar-toggle-desktop" class="sidebar-toggle-btn">‹</button>
+            </header>
+            <input type="text" id="search-bar" placeholder="Search...">
             <nav>
-                <button id="view-exercises-btn">View Exercises</button>
-                <button id="view-sessions-btn">View Sessions</button>
-                <button id="create-session-btn">Create New Session</button>
-                <button id="view-log-btn">View Workout Log</button>
-                <button id="load-defaults-btn">Load Defaults</button>
+                <button id="home-btn" title="Home">🏠 <span>Home</span></button>
+                <button id="view-exercises-btn" title="View All Exercises">💪 <span>View All Exercises</span></button>
+                <button id="view-sessions-btn" title="View All Sessions">📋 <span>View All Sessions</span></button>
+                <button id="create-session-btn" title="Create New Session">➕ <span>Create New Session</span></button>
+                <button id="view-log-btn" title="View Workout Log">📓 <span>View Workout Log</span></button>
+                <button id="load-defaults-btn" title="Load Defaults">🔄 <span>Load Defaults</span></button>
             </nav>
-        </header>
+        </aside>
         <main id="main-content">
+            <button id="sidebar-toggle-mobile" class="sidebar-toggle-btn">☰</button>
             <!-- Content will be dynamically inserted here -->
         </main>
+        <button id="show-sidebar-btn" class="sidebar-toggle-btn" title="Open Menu">☰</button>
     </div>
     <script src="script.js"></script>
 </body>

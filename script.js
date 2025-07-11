@@ -2,90 +2,949 @@ let currentSessionIndex = null;
 let currentExerciseIndex = 0;
 let timerInterval = null;
 
+// --- Global Scope Data ---
+// These are declared globally so they can be accessed by the inline onclick functions.
+let exercises = [];
+let sessions = [];
+let workoutLog = [];
+let favoriteExercises = [];
+let favoriteSessions = [];
+let newSessionExercises = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main-content');
+    const sidebar = document.querySelector('.sidebar');
+    const homeBtn = document.getElementById('home-btn');
     const viewExercisesBtn = document.getElementById('view-exercises-btn');
     const viewSessionsBtn = document.getElementById('view-sessions-btn');
     const createSessionBtn = document.getElementById('create-session-btn');
     const viewLogBtn = document.getElementById('view-log-btn');
     const loadDefaultsBtn = document.getElementById('load-defaults-btn');
+    const searchBar = document.getElementById('search-bar');
+    const sidebarToggleDesktop = document.getElementById('sidebar-toggle-desktop');
+    const sidebarToggleMobile = document.getElementById('sidebar-toggle-mobile');
+    const showSidebarBtn = document.getElementById('show-sidebar-btn');
 
-    let exercises = [];
-    let sessions = [];
-    let workoutLog = [];
-    let newSessionExercises = [];
+    let lastScrollTop = 0;
 
-    // Load data from JSON files
-    async function loadData(fromDefaults = false) {
-        try {
-            const [exercisesRes, sessionsRes, logRes] = await Promise.all([
-                fetch('./exercises.json'),
-                fetch('./sessions.json'),
-                fetch('./workout_log.json')
-            ]);
-            exercises = await exercisesRes.json();
-            
-            const savedSessions = localStorage.getItem('sessions');
-            sessions = (savedSessions && !fromDefaults) ? JSON.parse(savedSessions) : await sessionsRes.json();
-            
-            const savedLog = localStorage.getItem('workoutLog');
-            workoutLog = (savedLog && !fromDefaults) ? JSON.parse(savedLog) : await logRes.json();
+    const defaultExercises = [
+      {
+        "id": 1,
+        "name": "Push-up",
+        "description": "A classic bodyweight exercise that works the chest, shoulders, and triceps.",
+        "muscles": ["chest", "shoulders", "triceps"]
+      },
+      {
+        "id": 2,
+        "name": "Squat",
+        "description": "A fundamental lower body exercise that targets the quadriceps, hamstrings, and glutes.",
+        "muscles": ["quadriceps", "hamstrings", "glutes"]
+      },
+      {
+        "id": 3,
+        "name": "Plank",
+        "description": "An isometric core strength exercise that involves maintaining a position similar to a push-up for the maximum possible time.",
+        "muscles": ["abdominals", "obliques", "back"]
+      },
+      {
+        "id": 4,
+        "name": "Jumping Jacks",
+        "description": "A full-body exercise that can be done as a warm-up.",
+        "muscles": ["full body", "cardio"]
+      },
+      {
+        "id": 5,
+        "name": "Bench Press",
+        "description": "A compound exercise that targets the chest, shoulders, and triceps.",
+        "muscles": ["chest", "shoulders", "triceps"]
+      },
+      {
+        "id": 6,
+        "name": "Incline Bench Press",
+        "description": "A variation of the bench press that emphasizes the upper chest.",
+        "muscles": ["chest", "shoulders"]
+      },
+      {
+        "id": 7,
+        "name": "Dips",
+        "description": "A bodyweight exercise that primarily works the triceps and chest.",
+        "muscles": ["triceps", "chest", "shoulders"]
+      },
+      {
+        "id": 8,
+        "name": "Cable Flys",
+        "description": "An isolation exercise that targets the chest muscles.",
+        "muscles": ["chest"]
+      },
+      {
+        "id": 9,
+        "name": "Pec Deck Machine",
+        "description": "A machine-based isolation exercise for the chest.",
+        "muscles": ["chest"]
+      },
+      {
+        "id": 10,
+        "name": "Dumbbell Pullover",
+        "description": "An exercise that works the chest and back.",
+        "muscles": ["chest", "back"]
+      },
+      {
+        "id": 11,
+        "name": "Pull-Ups",
+        "description": "A challenging bodyweight exercise that targets the back and biceps.",
+        "muscles": ["back", "biceps"]
+      },
+      {
+        "id": 12,
+        "name": "Chin-Ups",
+        "description": "Similar to pull-ups, but with a closer grip, emphasizing the biceps.",
+        "muscles": ["back", "biceps"]
+      },
+      {
+        "id": 13,
+        "name": "Barbell Bent-Over Rows",
+        "description": "A compound exercise for building a strong and thick back.",
+        "muscles": ["back", "biceps"]
+      },
+      {
+        "id": 14,
+        "name": "Deadlifts",
+        "description": "A full-body compound exercise that develops overall strength.",
+        "muscles": ["back", "hamstrings", "glutes", "quadriceps"]
+      },
+      {
+        "id": 15,
+        "name": "T-Bar Rows",
+        "description": "A variation of the row that targets the middle back.",
+        "muscles": ["back"]
+      },
+      {
+        "id": 16,
+        "name": "Seated Cable Rows",
+        "description": "A machine-based exercise for targeting the back muscles.",
+        "muscles": ["back"]
+      },
+      {
+        "id": 17,
+        "name": "Lat Pulldowns",
+        "description": "A machine exercise that mimics the pull-up motion.",
+        "muscles": ["back"]
+      },
+      {
+        "id": 18,
+        "name": "Reverse Flys",
+        "description": "An isolation exercise for the rear deltoids and upper back.",
+        "muscles": ["shoulders", "back"]
+      },
+      {
+        "id": 19,
+        "name": "Overhead Press",
+        "description": "A compound shoulder exercise that builds strength and size.",
+        "muscles": ["shoulders", "triceps"]
+      },
+      {
+        "id": 20,
+        "name": "Arnold Press",
+        "description": "A dumbbell shoulder press variation that targets all three heads of the deltoid.",
+        "muscles": ["shoulders"]
+      },
+      {
+        "id": 21,
+        "name": "Lateral Raises",
+        "description": "An isolation exercise for the side deltoids.",
+        "muscles": ["shoulders"]
+      },
+      {
+        "id": 22,
+        "name": "Front Raises",
+        "description": "An isolation exercise for the front deltoids.",
+        "muscles": ["shoulders"]
+      },
+      {
+        "id": 23,
+        "name": "Upright Rows",
+        "description": "A compound exercise that targets the shoulders and traps.",
+        "muscles": ["shoulders", "back"]
+      },
+      {
+        "id": 24,
+        "name": "Face Pulls",
+        "description": "An exercise that improves shoulder health and posture.",
+        "muscles": ["shoulders", "back"]
+      },
+      {
+        "id": 25,
+        "name": "Leg Press",
+        "description": "A machine-based compound exercise for the legs.",
+        "muscles": ["quadriceps", "hamstrings", "glutes"]
+      },
+      {
+        "id": 26,
+        "name": "Lunges",
+        "description": "A unilateral leg exercise that improves balance and strength.",
+        "muscles": ["quadriceps", "hamstrings", "glutes"]
+      },
+      {
+        "id": 27,
+        "name": "Leg Extensions",
+        "description": "An isolation exercise for the quadriceps.",
+        "muscles": ["quadriceps"]
+      },
+      {
+        "id": 28,
+        "name": "Romanian Deadlifts",
+        "description": "A deadlift variation that emphasizes the hamstrings and glutes.",
+        "muscles": ["hamstrings", "glutes"]
+      },
+      {
+        "id": 29,
+        "name": "Stiff-Legged Deadlifts",
+        "description": "Similar to the Romanian deadlift, but with a greater emphasis on the hamstrings.",
+        "muscles": ["hamstrings"]
+      },
+      {
+        "id": 30,
+        "name": "Hamstring Curls",
+        "description": "An isolation exercise for the hamstrings.",
+        "muscles": ["hamstrings"]
+      },
+      {
+        "id": 31,
+        "name": "Good Mornings",
+        "description": "A hip-hinge exercise that strengthens the hamstrings and lower back.",
+        "muscles": ["hamstrings", "glutes", "back"]
+      },
+      {
+        "id": 32,
+        "name": "Hip Thrusts",
+        "description": "An exercise that isolates and builds the glute muscles.",
+        "muscles": ["glutes"]
+      },
+      {
+        "id": 33,
+        "name": "Glute Bridges",
+        "description": "A bodyweight exercise for activating and strengthening the glutes.",
+        "muscles": ["glutes"]
+      },
+      {
+        "id": 34,
+        "name": "Bulgarian Split Squats",
+        "description": "A single-leg squat variation that challenges balance and strength.",
+        "muscles": ["quadriceps", "glutes"]
+      },
+      {
+        "id": 35,
+        "name": "Cable Kickbacks",
+        "description": "An isolation exercise for the glutes using a cable machine.",
+        "muscles": ["glutes"]
+      },
+      {
+        "id": 36,
+        "name": "Calf Raises",
+        "description": "An isolation exercise for the calf muscles.",
+        "muscles": ["calves"]
+      },
+      {
+        "id": 37,
+        "name": "Jump Rope",
+        "description": "A cardiovascular exercise that also works the calves.",
+        "muscles": ["calves", "cardio"]
+      },
+      {
+        "id": 38,
+        "name": "Barbell Curls",
+        "description": "A classic biceps exercise for building mass.",
+        "muscles": ["biceps"]
+      },
+      {
+        "id": 39,
+        "name": "Dumbbell Curls",
+        "description": "A versatile biceps exercise that can be done standing or seated.",
+        "muscles": ["biceps"]
+      },
+      {
+        "id": 40,
+        "name": "Hammer Curls",
+        "description": "A curl variation that targets the biceps and brachialis.",
+        "muscles": ["biceps"]
+      },
+      {
+        "id": 41,
+        "name": "Preacher Curls",
+        "description": "An isolation exercise that prevents cheating and maximizes biceps contraction.",
+        "muscles": ["biceps"]
+      },
+      {
+        "id": 42,
+        "name": "Close-Grip Bench Press",
+        "description": "A bench press variation that emphasizes the triceps.",
+        "muscles": ["triceps", "chest"]
+      },
+      {
+        "id": 43,
+        "name": "Triceps Pushdowns",
+        "description": "An isolation exercise for the triceps using a cable machine.",
+        "muscles": ["triceps"]
+      },
+      {
+        "id": 44,
+        "name": "Overhead Triceps Extensions",
+        "description": "An exercise that targets the long head of the triceps.",
+        "muscles": ["triceps"]
+      },
+      {
+        "id": 45,
+        "name": "Crunches",
+        "description": "A classic abdominal exercise that targets the rectus abdominis.",
+        "muscles": ["abdominals"]
+      },
+      {
+        "id": 46,
+        "name": "Leg Raises",
+        "description": "An exercise that targets the lower abdominals.",
+        "muscles": ["abdominals"]
+      },
+      {
+        "id": 47,
+        "name": "Russian Twists",
+        "description": "An exercise that targets the obliques.",
+        "muscles": ["abdominals", "obliques"]
+      },
+      {
+        "id": 48,
+        "name": "Side Plank",
+        "description": "An isometric exercise that strengthens the obliques.",
+        "muscles": ["obliques"]
+      },
+      {
+        "id": 49,
+        "name": "Bicycle Crunches",
+        "description": "A dynamic exercise that works the abs and obliques.",
+        "muscles": ["abdominals", "obliques"]
+      },
+      {
+        "id": 50,
+        "name": "Wood Chops",
+        "description": "A functional exercise that mimics a chopping motion and works the core.",
+        "muscles": ["abdominals", "obliques"]
+      }
+    ];
+    const defaultSessions = [
+      {
+        "name": "Full Body Blast",
+        "exercises": [
+          {
+            "exercise_id": 4,
+            "duration_seconds": 60
+          },
+          {
+            "exercise_id": 2,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 1,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 3,
+            "duration_seconds": 45,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Beginner Full Body A",
+        "exercises": [
+          {
+            "exercise_id": 2,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 5,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 11,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 19,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 13,
+            "reps": 12,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Beginner Full Body B",
+        "exercises": [
+          {
+            "exercise_id": 28,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 13,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 6,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 17,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 26,
+            "reps": 12,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Intermediate Full Body A",
+        "exercises": [
+          {
+            "exercise_id": 2,
+            "reps": 8,
+            "sets": 3
+          },
+          {
+            "exercise_id": 5,
+            "reps": 8,
+            "sets": 3
+          },
+          {
+            "exercise_id": 11,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 19,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 30,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 39,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 24,
+            "reps": 15,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Intermediate Full Body B",
+        "exercises": [
+          {
+            "exercise_id": 28,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 16,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 6,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 25,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 21,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 43,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 36,
+            "reps": 15,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Advanced Full Body 1",
+        "exercises": [
+          {
+            "exercise_id": 2,
+            "reps": 5,
+            "sets": 4
+          },
+          {
+            "exercise_id": 11,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 19,
+            "reps": 6,
+            "sets": 3
+          },
+          {
+            "exercise_id": 32,
+            "reps": 8,
+            "sets": 3
+          },
+          {
+            "exercise_id": 46,
+            "reps": 12,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Advanced Full Body 2",
+        "exercises": [
+          {
+            "exercise_id": 28,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 6,
+            "reps": 10,
+            "sets": 4
+          },
+          {
+            "exercise_id": 34,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 15,
+            "reps": 10,
+            "sets": 4
+          },
+          {
+            "exercise_id": 1,
+            "reps": 20,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Advanced Full Body 3",
+        "exercises": [
+          {
+            "exercise_id": 37,
+            "duration_seconds": 300
+          },
+          {
+            "exercise_id": 14,
+            "reps": 10,
+            "sets": 4
+          },
+          {
+            "exercise_id": 7,
+            "reps": 12,
+            "sets": 4
+          },
+          {
+            "exercise_id": 26,
+            "reps": 20,
+            "sets": 3
+          },
+          {
+            "exercise_id": 3,
+            "duration_seconds": 60,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Push Day",
+        "exercises": [
+          {
+            "exercise_id": 5,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 6,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 19,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 21,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 43,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 44,
+            "reps": 12,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Pull Day",
+        "exercises": [
+          {
+            "exercise_id": 11,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 13,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 17,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 18,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 38,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 40,
+            "reps": 12,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Leg Day",
+        "exercises": [
+          {
+            "exercise_id": 2,
+            "reps": 8,
+            "sets": 4
+          },
+          {
+            "exercise_id": 25,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 28,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 30,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 36,
+            "reps": 15,
+            "sets": 4
+          }
+        ]
+      },
+      {
+        "name": "Upper Body",
+        "exercises": [
+          {
+            "exercise_id": 5,
+            "reps": 8,
+            "sets": 3
+          },
+          {
+            "exercise_id": 11,
+            "reps": 8,
+            "sets": 3
+          },
+          {
+            "exercise_id": 19,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 13,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 39,
+            "reps": 12,
+            "sets": 2
+          },
+          {
+            "exercise_id": 43,
+            "reps": 12,
+            "sets": 2
+          }
+        ]
+      },
+      {
+        "name": "Lower Body",
+        "exercises": [
+          {
+            "exercise_id": 2,
+            "reps": 10,
+            "sets": 3
+          },
+          {
+            "exercise_id": 28,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 26,
+            "reps": 12,
+            "sets": 3
+          },
+          {
+            "exercise_id": 32,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 36,
+            "reps": 20,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Core Focus",
+        "exercises": [
+          {
+            "exercise_id": 3,
+            "duration_seconds": 60,
+            "sets": 3
+          },
+          {
+            "exercise_id": 45,
+            "reps": 20,
+            "sets": 3
+          },
+          {
+            "exercise_id": 46,
+            "reps": 15,
+            "sets": 3
+          },
+          {
+            "exercise_id": 47,
+            "reps": 20,
+            "sets": 3
+          },
+          {
+            "exercise_id": 49,
+            "reps": 20,
+            "sets": 3
+          }
+        ]
+      },
+      {
+        "name": "Cardio & Core",
+        "exercises": [
+          {
+            "exercise_id": 4,
+            "duration_seconds": 120
+          },
+          {
+            "exercise_id": 37,
+            "duration_seconds": 120
+          },
+          {
+            "exercise_id": 3,
+            "duration_seconds": 60,
+            "sets": 2
+          },
+          {
+            "exercise_id": 49,
+            "reps": 25,
+            "sets": 2
+          },
+          {
+            "exercise_id": 46,
+            "reps": 20,
+            "sets": 2
+          }
+        ]
+      }
+    ];
+    const defaultWorkoutLog = [
+      {
+        "date": "2025-07-08 21:19:31",
+        "session_name": "test"
+      }
+    ];
 
-            if (fromDefaults) {
-                localStorage.setItem('sessions', JSON.stringify(sessions));
-                localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
-            }
+    // --- App Initialization ---
+    
+    loadData();
+    renderDashboard();
 
-        } catch (error) {
-            console.error("Error loading data:", error);
-            mainContent.innerHTML = '<p>Error loading data. Please make sure the JSON files are available.</p>';
+    // --- Load data from local storage or use defaults ---
+    function loadData(fromDefaults = false) {
+        exercises = defaultExercises; // Exercises are always from the default list
+
+        const savedSessions = localStorage.getItem('sessions');
+        sessions = (savedSessions && !fromDefaults) ? JSON.parse(savedSessions) : defaultSessions;
+        
+        const savedLog = localStorage.getItem('workoutLog');
+        workoutLog = (savedLog && !fromDefaults) ? JSON.parse(savedLog) : defaultWorkoutLog;
+
+        const savedFavExercises = localStorage.getItem('favoriteExercises');
+        favoriteExercises = savedFavExercises ? JSON.parse(savedFavExercises) : [];
+
+        const savedFavSessions = localStorage.getItem('favoriteSessions');
+        favoriteSessions = savedFavSessions ? JSON.parse(savedFavSessions) : [];
+
+        if (fromDefaults) {
+            localStorage.setItem('sessions', JSON.stringify(defaultSessions));
+            localStorage.setItem('workoutLog', JSON.stringify(defaultWorkoutLog));
+            localStorage.setItem('favoriteExercises', JSON.stringify([]));
+            localStorage.setItem('favoriteSessions', JSON.stringify([]));
+            sessions = defaultSessions;
+            workoutLog = defaultWorkoutLog;
+            favoriteExercises = [];
+            favoriteSessions = [];
         }
     }
 
     // --- Render Functions ---
 
-    function renderExercises() {
-        mainContent.innerHTML = '<h2>Exercise Library</h2>';
-        if (exercises.length === 0) {
-            mainContent.innerHTML += '<p>No exercises loaded. This may be due to browser security restrictions when running local files. Please try using a local server.</p>';
-            return;
+    function renderDashboard() {
+        mainContent.innerHTML = '<h2>Dashboard</h2>';
+        
+        const favExercisesSection = document.createElement('div');
+        favExercisesSection.className = 'dashboard-section';
+        favExercisesSection.innerHTML = '<h3>Favorite Exercises</h3>';
+        const favExList = document.createElement('div');
+        const favEx = exercises.filter(ex => favoriteExercises.includes(ex.id));
+        if (favEx.length > 0) {
+            favEx.forEach(ex => {
+                const exerciseEl = document.createElement('div');
+                exerciseEl.className = 'exercise';
+                exerciseEl.innerHTML = `
+                    <button class="fav-btn favorited" onclick="toggleFavoriteExercise(${ex.id})">&#9733;</button>
+                    <h4>${ex.name}</h4>
+                    <p>${ex.description}</p>
+                `;
+                favExList.appendChild(exerciseEl);
+            });
+        } else {
+            favExList.innerHTML = '<p>No favorite exercises yet. Find an exercise and click the star!</p>';
         }
-        exercises.forEach(ex => {
-            const exerciseEl = document.createElement('div');
-            exerciseEl.className = 'exercise';
-            exerciseEl.innerHTML = `
-                <h3>${ex.name} (ID: ${ex.id})</h3>
-                <p>${ex.description}</p>
-                <p><strong>Muscles:</strong> ${ex.muscles.join(', ')}</p>
-            `;
-            mainContent.appendChild(exerciseEl);
-        });
+        favExercisesSection.appendChild(favExList);
+        mainContent.appendChild(favExercisesSection);
+
+        const favSessionsSection = document.createElement('div');
+        favSessionsSection.className = 'dashboard-section';
+        favSessionsSection.innerHTML = '<h3>Favorite Sessions</h3>';
+        const favSessList = document.createElement('div');
+        const favSess = sessions.filter(s => favoriteSessions.includes(s.name));
+        if (favSess.length > 0) {
+            favSess.forEach(session => {
+                const sessionEl = document.createElement('div');
+                sessionEl.className = 'session';
+                const sessionIndex = sessions.findIndex(s => s.name === session.name);
+                sessionEl.innerHTML = `
+                    <button class="fav-btn favorited" onclick="toggleFavoriteSession('${session.name}')">&#9733;</button>
+                    <h4>${session.name}</h4>
+                    <button onclick="startSession(${sessionIndex})">Start Session</button>
+                `;
+                favSessList.appendChild(sessionEl);
+            });
+        } else {
+            favSessList.innerHTML = '<p>No favorite sessions yet. Find a session and click the star!</p>';
+        }
+        favSessionsSection.appendChild(favSessList);
+        mainContent.appendChild(favSessionsSection);
     }
 
-    function renderSessions() {
-        mainContent.innerHTML = '<h2>Workout Sessions</h2>';
-        if (sessions.length === 0) {
-            mainContent.innerHTML += '<p>No sessions loaded. This may be due to browser security restrictions when running local files. Please try using a local server.</p>';
-            return;
-        }
-        sessions.forEach((session, index) => {
-            const sessionEl = document.createElement('div');
-            sessionEl.className = 'session';
-            let exercisesHtml = '<ul>';
-            session.exercises.forEach(exDetail => {
-                const exercise = exercises.find(e => e.id === exDetail.exercise_id);
-                if (exercise) {
-                    exercisesHtml += `<li>${exercise.name}: ${exDetail.sets ? `${exDetail.sets} sets of ${exDetail.reps} reps` : `${exDetail.duration_seconds} seconds`}</li>`;
-                }
+    function renderExercises(filteredExercises = exercises) {
+        let content = '<h2>Exercise Library</h2>';
+        if (filteredExercises.length === 0) {
+            content += '<p>No exercises found.</p>';
+        } else {
+            filteredExercises.forEach(ex => {
+                const isFavorited = favoriteExercises.includes(ex.id);
+                content += `
+                    <div class="exercise">
+                        <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteExercise(${ex.id})">${isFavorited ? '&#9733;' : '&#9734;'}</button>
+                        <h3>${ex.name} (ID: ${ex.id})</h3>
+                        <p>${ex.description}</p>
+                        <p><strong>Muscles:</strong> ${ex.muscles.join(', ')}</p>
+                    </div>
+                `;
             });
-            exercisesHtml += '</ul>';
-            sessionEl.innerHTML = `
-                <h3>${session.name}</h3>
-                ${exercisesHtml}
-                <button onclick="startSession(${index})">Start Session</button>
-            `;
-            mainContent.appendChild(sessionEl);
-        });
+        }
+        mainContent.innerHTML = content;
+    }
+
+    function renderSessions(filteredSessions = sessions) {
+        let content = '<h2>Workout Sessions</h2>';
+        if (filteredSessions.length === 0) {
+            content += '<p>No sessions found.</p>';
+        } else {
+            filteredSessions.forEach(session => {
+                const isFavorited = favoriteSessions.includes(session.name);
+                const sessionIndex = sessions.findIndex(s => s.name === session.name);
+                let exercisesHtml = '<ul>';
+                session.exercises.forEach(exDetail => {
+                    const exercise = exercises.find(e => e.id === exDetail.exercise_id);
+                    if (exercise) {
+                        exercisesHtml += `<li>${exercise.name}: ${exDetail.sets ? `${exDetail.sets} sets of ${exDetail.reps} reps` : `${exDetail.duration_seconds} seconds`}</li>`;
+                    }
+                });
+                exercisesHtml += '</ul>';
+                content += `
+                    <div class="session">
+                        <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteSession('${session.name}')">${isFavorited ? '&#9733;' : '&#9734;'}</button>
+                        <h3>${session.name}</h3>
+                        ${exercisesHtml}
+                        <button onclick="startSession(${sessionIndex})">Start Session</button>
+                    </div>
+                `;
+            });
+        }
+        mainContent.innerHTML = content;
     }
 
     function renderWorkoutLog() {
@@ -211,81 +1070,210 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Session saved!');
         renderSessions();
     }
-
-    function startTimer(duration) {
-        const timerEl = document.getElementById('timer');
-        let timeLeft = duration;
-        timerEl.textContent = `Time left: ${timeLeft}`;
-        
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            timerEl.textContent = `Time left: ${timeLeft}`;
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                timerEl.textContent = "Time's up!";
-            }
-        }, 1000);
-    }
-
-    function prevExercise() {
-        if (currentExerciseIndex > 0) {
-            currentExerciseIndex--;
-            renderActiveWorkout();
-        }
-    }
-
-    function nextExercise() {
-        const session = sessions[currentSessionIndex];
-        if (currentExerciseIndex < session.exercises.length - 1) {
-            currentExerciseIndex++;
-            renderActiveWorkout();
-        } else {
-            alert('Last exercise!');
-        }
-    }
-
-    function finishWorkout() {
-        const session = sessions[currentSessionIndex];
-        workoutLog.push({
-            session_name: session.name,
-            date: new Date().toISOString()
-        });
-        localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
-        alert('Workout finished and logged!');
-        renderWorkoutLog();
-    }
     
     function loadDefaults() {
-        if (confirm('Are you sure you want to load the default sessions? This will overwrite your saved sessions.')) {
-            localStorage.removeItem('sessions');
-            localStorage.removeItem('workoutLog');
-            loadData(true).then(() => {
-                renderSessions();
-                alert('Default sessions and log have been loaded.');
+        if (confirm('Are you sure you want to load the default sessions? This will overwrite your saved sessions and favorites.')) {
+            loadData(true);
+            renderDashboard();
+            alert('Default sessions and log have been loaded.');
+        }
+    }
+
+    function handleSearch() {
+        const searchTerm = searchBar.value.toLowerCase();
+        if (searchTerm.length === 0) {
+            renderDashboard();
+            return;
+        }
+
+        const filteredExercises = exercises.filter(ex => ex.name.toLowerCase().includes(searchTerm) || ex.muscles.join(' ').toLowerCase().includes(searchTerm));
+        const filteredSessions = sessions.filter(s => s.name.toLowerCase().includes(searchTerm));
+        
+        const totalResults = filteredExercises.length + filteredSessions.length;
+        let resultsHTML = `<h2>Search Results</h2><p>${totalResults} result(s) found.</p>`;
+
+        if (filteredExercises.length > 0) {
+            resultsHTML += '<h3>Matching Exercises</h3>';
+            filteredExercises.forEach(ex => {
+                const isFavorited = favoriteExercises.includes(ex.id);
+                resultsHTML += `
+                    <div class="exercise">
+                        <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteExercise(${ex.id})">${isFavorited ? '&#9733;' : '&#9734;'}</button>
+                        <h3>${ex.name} (ID: ${ex.id})</h3>
+                        <p>${ex.description}</p>
+                        <p><strong>Muscles:</strong> ${ex.muscles.join(', ')}</p>
+                    </div>
+                `;
             });
         }
+        if (filteredSessions.length > 0) {
+            resultsHTML += '<h3>Matching Sessions</h3>';
+            filteredSessions.forEach(session => {
+                const isFavorited = favoriteSessions.includes(session.name);
+                const sessionIndex = sessions.findIndex(s => s.name === session.name);
+                let exercisesHtml = '<ul>';
+                session.exercises.forEach(exDetail => {
+                    const exercise = exercises.find(e => e.id === exDetail.exercise_id);
+                    if (exercise) {
+                        exercisesHtml += `<li>${exercise.name}: ${exDetail.sets ? `${exDetail.sets} sets of ${exDetail.reps} reps` : `${exDetail.duration_seconds} seconds`}</li>`;
+                    }
+                });
+                exercisesHtml += '</ul>';
+                resultsHTML += `
+                    <div class="session">
+                        <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteSession('${session.name}')">${isFavorited ? '&#9733;' : '&#9734;'}</button>
+                        <h3>${session.name}</h3>
+                        ${exercisesHtml}
+                        <button onclick="startSession(${sessionIndex})">Start Session</button>
+                    </div>
+                `;
+            });
+        }
+        if (totalResults === 0) {
+            resultsHTML += '<p>No results found.</p>';
+        }
+        mainContent.innerHTML = resultsHTML;
     }
 
     // --- Event Listeners ---
     
-    viewExercisesBtn.addEventListener('click', renderExercises);
-    viewSessionsBtn.addEventListener('click', renderSessions);
+    homeBtn.addEventListener('click', renderDashboard);
+    viewExercisesBtn.addEventListener('click', () => renderExercises());
+    viewSessionsBtn.addEventListener('click', () => renderSessions());
     viewLogBtn.addEventListener('click', renderWorkoutLog);
     createSessionBtn.addEventListener('click', renderCreateSessionForm);
     loadDefaultsBtn.addEventListener('click', loadDefaults);
+    searchBar.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
+    searchBar.addEventListener('input', handleSearch); // Keeps real-time search
 
+    sidebarToggleDesktop.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
 
-    // --- App Initialization ---
-    
-    loadData().then(() => {
-        renderExercises(); // Show exercises by default
+    sidebarToggleMobile.addEventListener('click', () => {
+        sidebar.classList.toggle('visible');
+    });
+
+    showSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('visible');
+    });
+
+    mainContent.addEventListener('scroll', () => {
+        let st = mainContent.scrollTop;
+        if (st < lastScrollTop && st > 200) { // Show on scroll up
+            showSidebarBtn.style.display = 'flex';
+        } else {
+            showSidebarBtn.style.display = 'none';
+        }
+        lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
     });
 });
+
+// --- Global Functions for inline HTML onclick ---
+
+function toggleFavoriteExercise(id) {
+    const index = favoriteExercises.indexOf(id);
+    if (index > -1) {
+        favoriteExercises.splice(index, 1);
+    } else {
+        favoriteExercises.push(id);
+    }
+    localStorage.setItem('favoriteExercises', JSON.stringify(favoriteExercises));
+    
+    // Re-render the current view to reflect the change
+    const searchBar = document.getElementById('search-bar');
+    const mainContent = document.getElementById('main-content');
+    if (searchBar.value) {
+        // This is a global function, so we need to find a way to call handleSearch
+        // A simple way is to trigger the input event again
+        searchBar.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (mainContent.querySelector('.dashboard-section')) {
+        // Or find a way to call renderDashboard
+        document.getElementById('home-btn').click(); // Simulate a click
+    } else {
+        // Or find a way to call renderExercises
+        document.getElementById('view-exercises-btn').click();
+    }
+}
+
+function toggleFavoriteSession(name) {
+    const index = favoriteSessions.indexOf(name);
+    if (index > -1) {
+        favoriteSessions.splice(index, 1);
+    } else {
+        favoriteSessions.push(name);
+    }
+    localStorage.setItem('favoriteSessions', JSON.stringify(favoriteSessions));
+
+    // Re-render the current view to reflect the change
+    const searchBar = document.getElementById('search-bar');
+    const mainContent = document.getElementById('main-content');
+    if (searchBar.value) {
+        searchBar.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (mainContent.querySelector('.dashboard-section')) {
+        document.getElementById('home-btn').click();
+    } else {
+        document.getElementById('view-sessions-btn').click();
+    }
+}
 
 function startSession(index) {
     currentSessionIndex = index;
     currentExerciseIndex = 0;
+    // This function needs access to renderActiveWorkout, which is inside DOMContentLoaded
+    // A simple solution is to make renderActiveWorkout global as well.
+    renderActiveWorkout();
+}
+
+function prevExercise() {
+    if (currentExerciseIndex > 0) {
+        currentExerciseIndex--;
+        renderActiveWorkout();
+    }
+}
+
+function nextExercise() {
+    const session = sessions[currentSessionIndex];
+    if (currentExerciseIndex < session.exercises.length - 1) {
+        currentExerciseIndex++;
+        renderActiveWorkout();
+    } else {
+        alert('Last exercise!');
+    }
+}
+
+function finishWorkout() {
+    const session = sessions[currentSessionIndex];
+    workoutLog.push({
+        session_name: session.name,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+    alert('Workout finished and logged!');
+    document.getElementById('view-log-btn').click(); // Go to log view
+}
+
+function startTimer(duration) {
+    const timerEl = document.getElementById('timer');
+    let timeLeft = duration;
+    timerEl.textContent = `Time left: ${timeLeft}`;
+    
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = `Time left: ${timeLeft}`;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerEl.textContent = "Time's up!";
+        }
+    }, 1000);
+}
+
+function renderActiveWorkout() {
     const mainContent = document.getElementById('main-content');
     const session = sessions[currentSessionIndex];
     const exerciseDetail = session.exercises[currentExerciseIndex];
@@ -310,6 +1298,7 @@ function startSession(index) {
         workoutDetails.innerHTML = `<p>Sets: ${exerciseDetail.sets}, Reps: ${exerciseDetail.reps}</p>`;
     }
 
+    // We need to re-add event listeners because we overwrote mainContent.innerHTML
     document.getElementById('prev-exercise-btn').addEventListener('click', prevExercise);
     document.getElementById('next-exercise-btn').addEventListener('click', nextExercise);
     document.getElementById('finish-workout-btn').addEventListener('click', finishWorkout);
