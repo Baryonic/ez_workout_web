@@ -937,7 +937,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteSession('${session.name}')">${isFavorited ? '&#9733;' : '&#9734;'}</button>
                         <h3>${session.name}</h3>
                         ${exercisesHtml}
-                        <button onclick="startSession(${sessionIndex})">Start Session</button>
+                        <div class="session-controls">
+                            <button onclick="startSession(${sessionIndex})">Start</button>
+                            ${session.is_custom ? `<button onclick="editSession(${sessionIndex})">Edit</button>` : ''}
+                            ${session.is_custom ? `<button onclick="deleteSession(${sessionIndex})">Delete</button>` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -947,12 +951,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderWorkoutLog() {
         mainContent.innerHTML = '<h2>Workout Log</h2>';
+        if (workoutLog.length === 0) {
+            mainContent.innerHTML += '<p>No workouts logged yet.</p>';
+            return;
+        }
         const sortedLogs = [...workoutLog].sort((a, b) => new Date(b.date) - new Date(a.date));
-        sortedLogs.forEach(log => {
+        sortedLogs.forEach((log, index) => {
             const logEl = document.createElement('div');
             logEl.className = 'log-entry';
+            // The original index is needed for deletion from the unsorted array
+            const originalIndex = workoutLog.indexOf(log);
             logEl.innerHTML = `
-                <h3>${log.session_name}</h3>
+                <div class="log-header">
+                    <h3>${log.session_name}</h3>
+                    <button class="delete-log-btn" onclick="deleteLogEntry(${originalIndex})">🗑️</button>
+                </div>
                 <p>Completed on: ${new Date(log.date).toLocaleString()}</p>
             `;
             mainContent.appendChild(logEl);
@@ -983,6 +996,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('add-exercise-btn').addEventListener('click', addExerciseToSession);
         document.getElementById('save-session-btn').addEventListener('click', saveSession);
+    }
+
+    function renderEditSessionForm(index) {
+        const session = sessions[index];
+        newSessionExercises = [...session.exercises]; // Copy exercises to edit
+
+        mainContent.innerHTML = `
+            <h2>Edit Session</h2>
+            <div class="session-header">
+                <input type="text" id="session-name" value="${session.name}" required>
+            </div>
+            <div id="new-session-exercises"></div>
+            <hr>
+            <h3>Add Exercise</h3>
+            <select id="exercise-select">
+                ${exercises.map(ex => `<option value="${ex.id}">${ex.name}</option>`).join('')}
+            </select>
+            <input type="number" id="sets-input" placeholder="Sets">
+            <input type="number" id="reps-input" placeholder="Reps">
+            <input type="number" id="duration-input" placeholder="Duration (seconds)">
+            <button id="add-exercise-btn">Add Exercise</button>
+            <hr>
+            <button id="update-session-btn">Update Session</button>
+        `;
+
+        renderNewSessionExercises(); // Display existing exercises
+
+        document.getElementById('add-exercise-btn').addEventListener('click', addExerciseToSession);
+        document.getElementById('update-session-btn').addEventListener('click', () => updateSession(index));
     }
 
     function renderActiveWorkout() {
@@ -1065,7 +1107,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sessions.push({
             name: sessionName,
-            exercises: newSessionExercises
+            exercises: newSessionExercises,
+            is_custom: true
         });
         localStorage.setItem('sessions', JSON.stringify(sessions));
 
@@ -1248,11 +1291,68 @@ function toggleFavoriteSession(name) {
     }
 }
 
+function deleteSession(index) {
+    if (confirm(`Are you sure you want to delete the "${sessions[index].name}" session?`)) {
+        const sessionName = sessions[index].name;
+        sessions.splice(index, 1);
+        localStorage.setItem('sessions', JSON.stringify(sessions));
+
+        const favIndex = favoriteSessions.indexOf(sessionName);
+        if (favIndex > -1) {
+            favoriteSessions.splice(favIndex, 1);
+            localStorage.setItem('favoriteSessions', JSON.stringify(favoriteSessions));
+        }
+
+        renderSessions();
+    }
+}
+
+function editSession(index) {
+    renderEditSessionForm(index);
+}
+
+function updateSession(index) {
+    const sessionName = document.getElementById('session-name').value;
+    if (!sessionName) {
+        alert('Please enter a name for the session.');
+        return;
+    }
+    if (newSessionExercises.length === 0) {
+        alert('Please add at least one exercise to the session.');
+        return;
+    }
+
+    const oldSessionName = sessions[index].name;
+    sessions[index] = {
+        name: sessionName,
+        exercises: newSessionExercises,
+        is_custom: true
+    };
+    localStorage.setItem('sessions', JSON.stringify(sessions));
+
+    const favIndex = favoriteSessions.indexOf(oldSessionName);
+    if (favIndex > -1) {
+        favoriteSessions[favIndex] = sessionName;
+        localStorage.setItem('favoriteSessions', JSON.stringify(favoriteSessions));
+    }
+
+    alert('Session updated!');
+    renderSessions();
+}
+
 function toggleNewSessionFavorite() {
     const favBtn = document.getElementById('new-session-fav-btn');
     if (favBtn) {
         favBtn.classList.toggle('favorited');
         favBtn.innerHTML = favBtn.classList.contains('favorited') ? '&#9733;' : '&#9734;';
+    }
+}
+
+function deleteLogEntry(index) {
+    if (confirm(`Are you sure you want to delete this log entry?`)) {
+        workoutLog.splice(index, 1);
+        localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+        renderWorkoutLog();
     }
 }
 
