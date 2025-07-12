@@ -21,11 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewLogBtn = document.getElementById('view-log-btn');
     const loadDefaultsBtn = document.getElementById('load-defaults-btn');
     const searchBar = document.getElementById('search-bar');
+    const searchBtn = document.getElementById('search-btn');
     const sidebarToggleDesktop = document.getElementById('sidebar-toggle-desktop');
-    const sidebarToggleMobile = document.getElementById('sidebar-toggle-mobile');
-    const showSidebarBtn = document.getElementById('show-sidebar-btn');
-
-    let lastScrollTop = 0;
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
 
     const defaultExercises = [
       {
@@ -965,7 +963,10 @@ document.addEventListener('DOMContentLoaded', () => {
         newSessionExercises = [];
         mainContent.innerHTML = `
             <h2>Create New Session</h2>
-            <input type="text" id="session-name" placeholder="Session Name" required>
+            <div class="session-header">
+                <input type="text" id="session-name" placeholder="Session Name" required>
+                <button id="new-session-fav-btn" class="fav-btn favorited" onclick="toggleNewSessionFavorite()">&#9733;</button>
+            </div>
             <div id="new-session-exercises"></div>
             <hr>
             <h3>Add Exercise</h3>
@@ -1067,6 +1068,15 @@ document.addEventListener('DOMContentLoaded', () => {
             exercises: newSessionExercises
         });
         localStorage.setItem('sessions', JSON.stringify(sessions));
+
+        const favBtn = document.getElementById('new-session-fav-btn');
+        if (favBtn && favBtn.classList.contains('favorited')) {
+            if (!favoriteSessions.includes(sessionName)) {
+                favoriteSessions.push(sessionName);
+                localStorage.setItem('favoriteSessions', JSON.stringify(favoriteSessions));
+            }
+        }
+
         alert('Session saved!');
         renderSessions();
     }
@@ -1135,14 +1145,43 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.innerHTML = resultsHTML;
     }
 
+    function closeSidebarOnMobile() {
+        if (window.innerWidth <= 768 && sidebar.classList.contains('visible')) {
+            sidebar.classList.remove('visible');
+        }
+    }
+
     // --- Event Listeners ---
     
-    homeBtn.addEventListener('click', renderDashboard);
-    viewExercisesBtn.addEventListener('click', () => renderExercises());
-    viewSessionsBtn.addEventListener('click', () => renderSessions());
-    viewLogBtn.addEventListener('click', renderWorkoutLog);
-    createSessionBtn.addEventListener('click', renderCreateSessionForm);
-    loadDefaultsBtn.addEventListener('click', loadDefaults);
+    homeBtn.addEventListener('click', () => {
+        renderDashboard();
+        closeSidebarOnMobile();
+    });
+    viewExercisesBtn.addEventListener('click', () => {
+        renderExercises();
+        closeSidebarOnMobile();
+    });
+    viewSessionsBtn.addEventListener('click', () => {
+        renderSessions();
+        closeSidebarOnMobile();
+    });
+    viewLogBtn.addEventListener('click', () => {
+        renderWorkoutLog();
+        closeSidebarOnMobile();
+    });
+    createSessionBtn.addEventListener('click', () => {
+        renderCreateSessionForm();
+        closeSidebarOnMobile();
+    });
+    loadDefaultsBtn.addEventListener('click', () => {
+        loadDefaults();
+        closeSidebarOnMobile();
+    });
+    searchBtn.addEventListener('click', () => {
+        handleSearch();
+        closeSidebarOnMobile();
+    });
+
     searchBar.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             handleSearch();
@@ -1154,23 +1193,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.toggle('collapsed');
     });
 
-    sidebarToggleMobile.addEventListener('click', () => {
-        sidebar.classList.toggle('visible');
-    });
-
-    showSidebarBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('visible');
-    });
-
-    mainContent.addEventListener('scroll', () => {
-        let st = mainContent.scrollTop;
-        if (st < lastScrollTop && st > 200) { // Show on scroll up
-            showSidebarBtn.style.display = 'flex';
-        } else {
-            showSidebarBtn.style.display = 'none';
-        }
-        lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
-    });
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('visible');
+        });
+    }
 });
 
 // --- Global Functions for inline HTML onclick ---
@@ -1218,6 +1245,14 @@ function toggleFavoriteSession(name) {
         document.getElementById('home-btn').click();
     } else {
         document.getElementById('view-sessions-btn').click();
+    }
+}
+
+function toggleNewSessionFavorite() {
+    const favBtn = document.getElementById('new-session-fav-btn');
+    if (favBtn) {
+        favBtn.classList.toggle('favorited');
+        favBtn.innerHTML = favBtn.classList.contains('favorited') ? '&#9733;' : '&#9734;';
     }
 }
 

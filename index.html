@@ -7,13 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header class="mobile-top-bar">
+        <h1 class="mobile-header-title">EZ Workout</h1>
+        <button id="mobile-menu-toggle" class="sidebar-toggle-btn">☰</button>
+    </header>
     <div class="container">
         <aside class="sidebar">
             <header>
                 <h1 class="sidebar-title">EZ Workout</h1>
                 <button id="sidebar-toggle-desktop" class="sidebar-toggle-btn">‹</button>
             </header>
-            <input type="text" id="search-bar" placeholder="Search...">
+            <div class="search-container">
+                <input type="text" id="search-bar" placeholder="Search...">
+                <button id="search-btn">🔍</button>
+            </div>
             <nav>
                 <button id="home-btn" title="Home">🏠 <span>Home</span></button>
                 <button id="view-exercises-btn" title="View All Exercises">💪 <span>View All Exercises</span></button>
@@ -24,10 +31,8 @@
             </nav>
         </aside>
         <main id="main-content">
-            <button id="sidebar-toggle-mobile" class="sidebar-toggle-btn">☰</button>
             <!-- Content will be dynamically inserted here -->
         </main>
-        <button id="show-sidebar-btn" class="sidebar-toggle-btn" title="Open Menu">☰</button>
     </div>
     <script src="script.js"></script>
 </body>

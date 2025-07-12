@@ -47,14 +47,34 @@ body {
     transition: opacity 0.3s ease;
 }
 
-#search-bar {
-    width: calc(100% - 40px);
+
+.search-container {
+    position: relative;
     margin: 20px;
+}
+
+#search-bar {
+    width: 100%;
     padding: 10px;
+    padding-right: 40px; /* Make space for the button */
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
 }
+
+#search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    color: #888;
+}
+
 
 .sidebar nav {
     display: flex;
@@ -131,6 +151,17 @@ nav button span {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+.session-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#session-name {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
 .exercise h3, .session h3, .log-entry h3, .dashboard-section h2 {
     margin-top: 0;
 }
@@ -171,16 +202,33 @@ nav button span {
     display: block;
 }
 
-#sidebar-toggle-mobile {
-    display: none;
+.mobile-top-bar {
+    display: none; /* Hidden by default */
     position: fixed;
-    top: 15px;
-    left: 15px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
     z-index: 1001;
 }
 
+.mobile-header-title {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+
 /* Mobile Styles */
 @media (max-width: 768px) {
+    .mobile-top-bar {
+        display: flex;
+    }
+
     .container {
         padding-left: 0;
     }
@@ -196,7 +244,7 @@ nav button span {
 
     #main-content {
         padding: 20px;
-        padding-top: 70px; /* Space for the toggle button */
+        padding-top: 80px; /* Space for the new top bar (60px) + padding (20px) */
     }
 
     .sidebar.collapsed + #main-content,
@@ -207,17 +255,4 @@ nav button span {
     #sidebar-toggle-desktop {
         display: none;
     }
-
-    #sidebar-toggle-mobile {
-        display: flex;
-    }
-
-    #show-sidebar-btn {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        display: none; /* Hidden by default */
-        z-index: 1001;
-    }
 }
-
