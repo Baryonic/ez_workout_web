@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "name": "Pectoralis Major",
+    "image_url": "muscles_images/pectoralis_major.svg"
+  },
+  {
+    "id": 2,
+    "name": "Anterior Deltoids",
+    "image_url": "muscles_images/anterior_deltoids.svg"
+  },
+  {
+    "id": 3,
+    "name": "Triceps Brachii",
+    "image_url": "muscles_images/triceps_brachii.svg"
+  },
+  {
+    "id": 4,
+    "name": "Quadriceps",
+    "image_url": "muscles_images/quadriceps.svg"
+  },
+  {
+    "id": 5,
+    "name": "Hamstrings",
+    "image_url": "muscles_images/hamstrings.svg"
+  },
+  {
+    "id": 6,
+    "name": "Glutes",
+    "image_url": "muscles_images/glutes.svg"
+  },
+  {
+    "id": 7,
+    "name": "Rectus Abdominis",
+    "image_url": "muscles_images/rectus_abdominis.svg"
+  },
+  {
+    "id": 8,
+    "name": "Obliques",
+    "image_url": "muscles_images/obliques.svg"
+  },
+  {
+    "id": 9,
+    "name": "Erector Spinae",
+    "image_url": "muscles_images/erector_spinae.svg"
+  },
+  {
+    "id": 10,
+    "name": "Latissimus Dorsi",
+    "image_url": "muscles_images/latissimus_dorsi.svg"
+  },
+  {
+    "id": 11,
+    "name": "Biceps Brachii",
+    "image_url": "muscles_images/biceps_brachii.svg"
+  },
+  {
+    "id": 12,
+    "name": "Trapezius",
+    "image_url": "muscles_images/trapezius.svg"
+  },
+  {
+    "id": 13,
+    "name": "Rhomboids",
+    "image_url": "muscles_images/rhomboids.svg"
+  },
+  {
+    "id": 14,
+    "name": "Lateral Deltoids",
+    "image_url": "muscles_images/lateral_deltoids.svg"
+  },
+  {
+    "id": 15,
+    "name": "Posterior Deltoids",
+    "image_url": "muscles_images/posterior_deltoids.svg"
+  },
+  {
+    "id": 16,
+    "name": "Gastrocnemius",
+    "image_url": "muscles_images/gastrocnemius.svg"
+  },
+  {
+    "id": 17,
+    "name": "Soleus",
+    "image_url": "muscles_images/soleus.svg"
+  },
+  {
+    "id": 18,
+    "name": "Brachialis",
+    "image_url": "muscles_images/brachialis.svg"
+  },
+  {
+    "id": 19,
+    "name": "Brachioradialis",
+    "image_url": "muscles_images/brachioradialis.svg"
+  },
+  {
+    "id": 20,
+    "name": "Cardio",
+    "image_url": "muscles_images/cardio.svg"
+  },
+  {
+    "id": 21,
+    "name": "Full Body",
+    "image_url": "muscles_images/full_body.svg"
+  }
+]

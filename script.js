@@ -10,6 +10,7 @@ let workoutLog = [];
 let favoriteExercises = [];
 let favoriteSessions = [];
 let newSessionExercises = [];
+let muscles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main-content');
@@ -25,306 +26,464 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarToggleDesktop = document.getElementById('sidebar-toggle-desktop');
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
 
+    const defaultMuscles = [
+      {
+        "id": 1,
+        "name": "Pectoralis Major",
+        "image_url": "muscles_images/Pectoralis Major.svg"
+      },
+      {
+        "id": 2,
+        "name": "Anterior Deltoids",
+        "image_url": "muscles_images/Anterior Deltoids.svg"
+      },
+      {
+        "id": 3,
+        "name": "Triceps Brachii",
+        "image_url": "muscles_images/Triceps Brachii.svg"
+      },
+      {
+        "id": 4,
+        "name": "Quadriceps",
+        "image_url": "muscles_images/Quadriceps.svg"
+      },
+      {
+        "id": 5,
+        "name": "Hamstrings",
+        "image_url": "muscles_images/Hamstrings.svg"
+      },
+      {
+        "id": 6,
+        "name": "Glutes",
+        "image_url": "muscles_images/Glutes.svg"
+      },
+      {
+        "id": 7,
+        "name": "Rectus Abdominis",
+        "image_url": "muscles_images/Rectus Abdominis.svg"
+      },
+      {
+        "id": 8,
+        "name": "Obliques",
+        "image_url": "muscles_images/Obliques.svg"
+      },
+      {
+        "id": 9,
+        "name": "Erector Spinae",
+        "image_url": "muscles_images/Erector Spinae.svg"
+      },
+      {
+        "id": 10,
+        "name": "Latissimus Dorsi",
+        "image_url": "muscles_images/Latissimus Dorsi.svg"
+      },
+      {
+        "id": 11,
+        "name": "Biceps Brachii",
+        "image_url": "muscles_images/biceps_brachii.png"
+      },
+      {
+        "id": 12,
+        "name": "Trapezius",
+        "image_url": "muscles_images/trapezius.png"
+      },
+      {
+        "id": 13,
+        "name": "Rhomboids",
+        "image_url": "muscles_images/rhomboids.png"
+      },
+      {
+        "id": 14,
+        "name": "Lateral Deltoids",
+        "image_url": "muscles_images/lateral_deltoids.png"
+      },
+      {
+        "id": 15,
+        "name": "Posterior Deltoids",
+        "image_url": "muscles_images/posterior_deltoids.png"
+      },
+      {
+        "id": 16,
+        "name": "Gastrocnemius",
+        "image_url": "muscles_images/gastrocnemius.png"
+      },
+      {
+        "id": 17,
+        "name": "Soleus",
+        "image_url": "muscles_images/soleus.png"
+      },
+      {
+        "id": 18,
+        "name": "Brachialis",
+        "image_url": "muscles_images/brachialis.png"
+      },
+      {
+        "id": 19,
+        "name": "Brachioradialis",
+        "image_url": "muscles_images/brachioradialis.png"
+      },
+      {
+        "id": 20,
+        "name": "Cardio",
+        "image_url": "muscles_images/cardio.png"
+      },
+      {
+        "id": 21,
+        "name": "Full Body",
+        "image_url": "muscles_images/full_body.png"
+      }
+    ];
+
     const defaultExercises = [
       {
         "id": 1,
         "name": "Push-up",
         "description": "A classic bodyweight exercise that works the chest, shoulders, and triceps.",
-        "muscles": ["chest", "shoulders", "triceps"]
+        "muscles": ["Pectoralis Major", "Anterior Deltoids", "Triceps Brachii"],
+        "muscle_ids": [1, 2, 3]
       },
       {
         "id": 2,
         "name": "Squat",
         "description": "A fundamental lower body exercise that targets the quadriceps, hamstrings, and glutes.",
-        "muscles": ["quadriceps", "hamstrings", "glutes"]
+        "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
+        "muscle_ids": [4, 5, 6]
       },
       {
         "id": 3,
         "name": "Plank",
         "description": "An isometric core strength exercise that involves maintaining a position similar to a push-up for the maximum possible time.",
-        "muscles": ["abdominals", "obliques", "back"]
+        "muscles": ["Rectus Abdominis", "Obliques", "Erector Spinae"],
+        "muscle_ids": [7, 8, 9]
       },
       {
         "id": 4,
         "name": "Jumping Jacks",
         "description": "A full-body exercise that can be done as a warm-up.",
-        "muscles": ["full body", "cardio"]
+        "muscles": ["Full Body", "Cardio"],
+        "muscle_ids": [21, 20]
       },
       {
         "id": 5,
         "name": "Bench Press",
         "description": "A compound exercise that targets the chest, shoulders, and triceps.",
-        "muscles": ["chest", "shoulders", "triceps"]
+        "muscles": ["Pectoralis Major", "Anterior Deltoids", "Triceps Brachii"],
+        "muscle_ids": [1, 2, 3]
       },
       {
         "id": 6,
         "name": "Incline Bench Press",
         "description": "A variation of the bench press that emphasizes the upper chest.",
-        "muscles": ["chest", "shoulders"]
+        "muscles": ["Pectoralis Major", "Anterior Deltoids"],
+        "muscle_ids": [1, 2]
       },
       {
         "id": 7,
         "name": "Dips",
         "description": "A bodyweight exercise that primarily works the triceps and chest.",
-        "muscles": ["triceps", "chest", "shoulders"]
+        "muscles": ["Triceps Brachii", "Pectoralis Major", "Anterior Deltoids"],
+        "muscle_ids": [3, 1, 2]
       },
       {
         "id": 8,
         "name": "Cable Flys",
         "description": "An isolation exercise that targets the chest muscles.",
-        "muscles": ["chest"]
+        "muscles": ["Pectoralis Major"],
+        "muscle_ids": [1]
       },
       {
         "id": 9,
         "name": "Pec Deck Machine",
         "description": "A machine-based isolation exercise for the chest.",
-        "muscles": ["chest"]
+        "muscles": ["Pectoralis Major"],
+        "muscle_ids": [1]
       },
       {
         "id": 10,
         "name": "Dumbbell Pullover",
         "description": "An exercise that works the chest and back.",
-        "muscles": ["chest", "back"]
+        "muscles": ["Pectoralis Major", "Latissimus Dorsi"],
+        "muscle_ids": [1, 10]
       },
       {
         "id": 11,
         "name": "Pull-Ups",
         "description": "A challenging bodyweight exercise that targets the back and biceps.",
-        "muscles": ["back", "biceps"]
+        "muscles": ["Latissimus Dorsi", "Biceps Brachii"],
+        "muscle_ids": [10, 11]
       },
       {
         "id": 12,
         "name": "Chin-Ups",
         "description": "Similar to pull-ups, but with a closer grip, emphasizing the biceps.",
-        "muscles": ["back", "biceps"]
+        "muscles": ["Latissimus Dorsi", "Biceps Brachii"],
+        "muscle_ids": [10, 11]
       },
       {
         "id": 13,
         "name": "Barbell Bent-Over Rows",
         "description": "A compound exercise for building a strong and thick back.",
-        "muscles": ["back", "biceps"]
+        "muscles": ["Latissimus Dorsi", "Biceps Brachii", "Rhomboids", "Trapezius"],
+        "muscle_ids": [10, 11, 13, 12]
       },
       {
         "id": 14,
         "name": "Deadlifts",
         "description": "A full-body compound exercise that develops overall strength.",
-        "muscles": ["back", "hamstrings", "glutes", "quadriceps"]
+        "muscles": ["Erector Spinae", "Hamstrings", "Glutes", "Quadriceps", "Trapezius"],
+        "muscle_ids": [9, 5, 6, 4, 12]
       },
       {
         "id": 15,
         "name": "T-Bar Rows",
         "description": "A variation of the row that targets the middle back.",
-        "muscles": ["back"]
+        "muscles": ["Latissimus Dorsi", "Rhomboids"],
+        "muscle_ids": [10, 13]
       },
       {
         "id": 16,
         "name": "Seated Cable Rows",
         "description": "A machine-based exercise for targeting the back muscles.",
-        "muscles": ["back"]
+        "muscles": ["Latissimus Dorsi", "Rhomboids"],
+        "muscle_ids": [10, 13]
       },
       {
         "id": 17,
         "name": "Lat Pulldowns",
         "description": "A machine exercise that mimics the pull-up motion.",
-        "muscles": ["back"]
+        "muscles": ["Latissimus Dorsi"],
+        "muscle_ids": [10]
       },
       {
         "id": 18,
         "name": "Reverse Flys",
         "description": "An isolation exercise for the rear deltoids and upper back.",
-        "muscles": ["shoulders", "back"]
+        "muscles": ["Posterior Deltoids", "Rhomboids"],
+        "muscle_ids": [15, 13]
       },
       {
         "id": 19,
         "name": "Overhead Press",
         "description": "A compound shoulder exercise that builds strength and size.",
-        "muscles": ["shoulders", "triceps"]
+        "muscles": ["Anterior Deltoids", "Lateral Deltoids", "Triceps Brachii"],
+        "muscle_ids": [2, 14, 3]
       },
       {
         "id": 20,
         "name": "Arnold Press",
         "description": "A dumbbell shoulder press variation that targets all three heads of the deltoid.",
-        "muscles": ["shoulders"]
+        "muscles": ["Anterior Deltoids", "Lateral Deltoids", "Posterior Deltoids"],
+        "muscle_ids": [2, 14, 15]
       },
       {
         "id": 21,
         "name": "Lateral Raises",
         "description": "An isolation exercise for the side deltoids.",
-        "muscles": ["shoulders"]
+        "muscles": ["Lateral Deltoids"],
+        "muscle_ids": [14]
       },
       {
         "id": 22,
         "name": "Front Raises",
         "description": "An isolation exercise for the front deltoids.",
-        "muscles": ["shoulders"]
+        "muscles": ["Anterior Deltoids"],
+        "muscle_ids": [2]
       },
       {
         "id": 23,
         "name": "Upright Rows",
         "description": "A compound exercise that targets the shoulders and traps.",
-        "muscles": ["shoulders", "back"]
+        "muscles": ["Lateral Deltoids", "Trapezius"],
+        "muscle_ids": [14, 12]
       },
       {
         "id": 24,
         "name": "Face Pulls",
         "description": "An exercise that improves shoulder health and posture.",
-        "muscles": ["shoulders", "back"]
+        "muscles": ["Posterior Deltoids", "Rhomboids"],
+        "muscle_ids": [15, 13]
       },
       {
         "id": 25,
         "name": "Leg Press",
         "description": "A machine-based compound exercise for the legs.",
-        "muscles": ["quadriceps", "hamstrings", "glutes"]
+        "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
+        "muscle_ids": [4, 5, 6]
       },
       {
         "id": 26,
         "name": "Lunges",
         "description": "A unilateral leg exercise that improves balance and strength.",
-        "muscles": ["quadriceps", "hamstrings", "glutes"]
+        "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
+        "muscle_ids": [4, 5, 6]
       },
       {
         "id": 27,
         "name": "Leg Extensions",
         "description": "An isolation exercise for the quadriceps.",
-        "muscles": ["quadriceps"]
+        "muscles": ["Quadriceps"],
+        "muscle_ids": [4]
       },
       {
         "id": 28,
         "name": "Romanian Deadlifts",
         "description": "A deadlift variation that emphasizes the hamstrings and glutes.",
-        "muscles": ["hamstrings", "glutes"]
+        "muscles": ["Hamstrings", "Glutes"],
+        "muscle_ids": [5, 6]
       },
       {
         "id": 29,
         "name": "Stiff-Legged Deadlifts",
         "description": "Similar to the Romanian deadlift, but with a greater emphasis on the hamstrings.",
-        "muscles": ["hamstrings"]
+        "muscles": ["Hamstrings"],
+        "muscle_ids": [5]
       },
       {
         "id": 30,
         "name": "Hamstring Curls",
         "description": "An isolation exercise for the hamstrings.",
-        "muscles": ["hamstrings"]
+        "muscles": ["Hamstrings"],
+        "muscle_ids": [5]
       },
       {
         "id": 31,
         "name": "Good Mornings",
         "description": "A hip-hinge exercise that strengthens the hamstrings and lower back.",
-        "muscles": ["hamstrings", "glutes", "back"]
+        "muscles": ["Hamstrings", "Glutes", "Erector Spinae"],
+        "muscle_ids": [5, 6, 9]
       },
       {
         "id": 32,
         "name": "Hip Thrusts",
         "description": "An exercise that isolates and builds the glute muscles.",
-        "muscles": ["glutes"]
+        "muscles": ["Glutes"],
+        "muscle_ids": [6]
       },
       {
         "id": 33,
         "name": "Glute Bridges",
         "description": "A bodyweight exercise for activating and strengthening the glutes.",
-        "muscles": ["glutes"]
+        "muscles": ["Glutes"],
+        "muscle_ids": [6]
       },
       {
         "id": 34,
         "name": "Bulgarian Split Squats",
         "description": "A single-leg squat variation that challenges balance and strength.",
-        "muscles": ["quadriceps", "glutes"]
+        "muscles": ["Quadriceps", "Glutes"],
+        "muscle_ids": [4, 6]
       },
       {
         "id": 35,
         "name": "Cable Kickbacks",
         "description": "An isolation exercise for the glutes using a cable machine.",
-        "muscles": ["glutes"]
+        "muscles": ["Glutes"],
+        "muscle_ids": [6]
       },
       {
         "id": 36,
         "name": "Calf Raises",
         "description": "An isolation exercise for the calf muscles.",
-        "muscles": ["calves"]
+        "muscles": ["Gastrocnemius", "Soleus"],
+        "muscle_ids": [16, 17]
       },
       {
         "id": 37,
         "name": "Jump Rope",
         "description": "A cardiovascular exercise that also works the calves.",
-        "muscles": ["calves", "cardio"]
+        "muscles": ["Gastrocnemius", "Soleus", "Cardio"],
+        "muscle_ids": [16, 17, 20]
       },
       {
         "id": 38,
         "name": "Barbell Curls",
         "description": "A classic biceps exercise for building mass.",
-        "muscles": ["biceps"]
+        "muscles": ["Biceps Brachii"],
+        "muscle_ids": [11]
       },
       {
         "id": 39,
         "name": "Dumbbell Curls",
         "description": "A versatile biceps exercise that can be done standing or seated.",
-        "muscles": ["biceps"]
+        "muscles": ["Biceps Brachii"],
+        "muscle_ids": [11]
       },
       {
         "id": 40,
         "name": "Hammer Curls",
         "description": "A curl variation that targets the biceps and brachialis.",
-        "muscles": ["biceps"]
+        "muscles": ["Biceps Brachii", "Brachialis"],
+        "muscle_ids": [11, 18]
       },
       {
         "id": 41,
         "name": "Preacher Curls",
         "description": "An isolation exercise that prevents cheating and maximizes biceps contraction.",
-        "muscles": ["biceps"]
+        "muscles": ["Biceps Brachii"],
+        "muscle_ids": [11]
       },
       {
         "id": 42,
         "name": "Close-Grip Bench Press",
         "description": "A bench press variation that emphasizes the triceps.",
-        "muscles": ["triceps", "chest"]
+        "muscles": ["Triceps Brachii", "Pectoralis Major"],
+        "muscle_ids": [3, 1]
       },
       {
         "id": 43,
         "name": "Triceps Pushdowns",
         "description": "An isolation exercise for the triceps using a cable machine.",
-        "muscles": ["triceps"]
+        "muscles": ["Triceps Brachii"],
+        "muscle_ids": [3]
       },
       {
         "id": 44,
         "name": "Overhead Triceps Extensions",
         "description": "An exercise that targets the long head of the triceps.",
-        "muscles": ["triceps"]
+        "muscles": ["Triceps Brachii"],
+        "muscle_ids": [3]
       },
       {
         "id": 45,
         "name": "Crunches",
         "description": "A classic abdominal exercise that targets the rectus abdominis.",
-        "muscles": ["abdominals"]
+        "muscles": ["Rectus Abdominis"],
+        "muscle_ids": [7]
       },
       {
         "id": 46,
         "name": "Leg Raises",
         "description": "An exercise that targets the lower abdominals.",
-        "muscles": ["abdominals"]
+        "muscles": ["Rectus Abdominis"],
+        "muscle_ids": [7]
       },
       {
         "id": 47,
         "name": "Russian Twists",
         "description": "An exercise that targets the obliques.",
-        "muscles": ["abdominals", "obliques"]
+        "muscles": ["Rectus Abdominis", "Obliques"],
+        "muscle_ids": [7, 8]
       },
       {
         "id": 48,
         "name": "Side Plank",
         "description": "An isometric exercise that strengthens the obliques.",
-        "muscles": ["obliques"]
+        "muscles": ["Obliques"],
+        "muscle_ids": [8]
       },
       {
         "id": 49,
         "name": "Bicycle Crunches",
         "description": "A dynamic exercise that works the abs and obliques.",
-        "muscles": ["abdominals", "obliques"]
+        "muscles": ["Rectus Abdominis", "Obliques"],
+        "muscle_ids": [7, 8]
       },
       {
         "id": 50,
         "name": "Wood Chops",
         "description": "A functional exercise that mimics a chopping motion and works the core.",
-        "muscles": ["abdominals", "obliques"]
+        "muscles": ["Rectus Abdominis", "Obliques"],
+        "muscle_ids": [7, 8]
       }
     ];
     const defaultSessions = [
@@ -819,7 +978,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Load data from local storage or use defaults ---
     function loadData(fromDefaults = false) {
-        exercises = defaultExercises; // Exercises are always from the default list
+        exercises = defaultExercises;
+        muscles = defaultMuscles;
 
         const savedSessions = localStorage.getItem('sessions');
         sessions = (savedSessions && !fromDefaults) ? JSON.parse(savedSessions) : defaultSessions;
@@ -903,12 +1063,28 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             filteredExercises.forEach(ex => {
                 const isFavorited = favoriteExercises.includes(ex.id);
+                let musclesHtml = '<div class="muscles-container">';
+                if (ex.muscle_ids && ex.muscle_ids.length > 0) {
+                    ex.muscle_ids.forEach(muscleId => {
+                        const muscle = muscles.find(m => m.id === muscleId);
+                        if (muscle) {
+                            musclesHtml += `
+                                <div class="muscle-item">
+                                    <img src="${muscle.image_url}" alt="${muscle.name}" class="muscle-image" onerror="this.parentElement.innerHTML = '<p class=\'muscle-name\'>${muscle.name} image</p>';">
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                musclesHtml += '</div>';
+
                 content += `
                     <div class="exercise">
                         <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteExercise(${ex.id})">${isFavorited ? '&#9733;' : '&#9734;'}</button>
                         <h3>${ex.name} (ID: ${ex.id})</h3>
                         <p>${ex.description}</p>
                         <p><strong>Muscles:</strong> ${ex.muscles.join(', ')}</p>
+                        ${musclesHtml}
                     </div>
                 `;
             });
@@ -1149,12 +1325,28 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsHTML += '<h3>Matching Exercises</h3>';
             filteredExercises.forEach(ex => {
                 const isFavorited = favoriteExercises.includes(ex.id);
+                let musclesHtml = '<div class="muscles-container">';
+                if (ex.muscle_ids && ex.muscle_ids.length > 0) {
+                    ex.muscle_ids.forEach(muscleId => {
+                        const muscle = muscles.find(m => m.id === muscleId);
+                        if (muscle) {
+                            musclesHtml += `
+                                <div class="muscle-item">
+                                    <img src="${muscle.image_url}" alt="${muscle.name}" class="muscle-image" onerror="this.parentElement.innerHTML = '<p class=\'muscle-name\'>${muscle.name} image</p>';">
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                musclesHtml += '</div>';
+
                 resultsHTML += `
                     <div class="exercise">
                         <button class="fav-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavoriteExercise(${ex.id})">${isFavorited ? '&#9733;' : '&#9734;'}</button>
                         <h3>${ex.name} (ID: ${ex.id})</h3>
                         <p>${ex.description}</p>
                         <p><strong>Muscles:</strong> ${ex.muscles.join(', ')}</p>
+                        ${musclesHtml}
                     </div>
                 `;
             });
@@ -1196,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     
-    homeBtn.addEventListener('click', () => {
+homeBtn.addEventListener('click', () => {
         renderDashboard();
         closeSidebarOnMobile();
     });
@@ -1437,4 +1629,59 @@ function renderActiveWorkout() {
     document.getElementById('prev-exercise-btn').addEventListener('click', prevExercise);
     document.getElementById('next-exercise-btn').addEventListener('click', nextExercise);
     document.getElementById('finish-workout-btn').addEventListener('click', finishWorkout);
+}
+
+
+function renderEditSessionForm(index) {
+    const mainContent = document.getElementById('main-content');
+    const session = sessions[index];
+    newSessionExercises = [...session.exercises]; // Copy exercises to edit
+
+    mainContent.innerHTML = `
+        <h2>Edit Session</h2>
+        <div class="session-header">
+            <input type="text" id="session-name" value="${session.name}" required>
+        </div>
+        <div id="new-session-exercises"></div>
+        <hr>
+        <h3>Add Exercise</h3>
+        <select id="exercise-select">
+            ${exercises.map(ex => `<option value="${ex.id}">${ex.name}</option>`).join('')}
+        </select>
+        <input type="number" id="sets-input" placeholder="Sets">
+        <input type="number" id="reps-input" placeholder="Reps">
+        <input type="number" id="duration-input" placeholder="Duration (seconds)">
+        <button id="add-exercise-btn">Add Exercise</button>
+        <hr>
+        <button id="update-session-btn">Update Session</button>
+    `;
+
+    renderNewSessionExercises(); // Display existing exercises
+
+    document.getElementById('add-exercise-btn').addEventListener('click', addExerciseToSession);
+    document.getElementById('update-session-btn').addEventListener('click', () => updateSession(index));
+}
+
+function renderNewSessionExercises() {
+    const container = document.getElementById('new-session-exercises');
+    container.innerHTML = '<h3>Exercises in this session:</h3>';
+    const list = document.createElement('ul');
+    newSessionExercises.forEach((exDetail, index) => {
+        const exercise = exercises.find(e => e.id === exDetail.exercise_id);
+        if (exercise) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${exercise.name}: ${exDetail.sets ? `${exDetail.sets} sets of ${exDetail.reps} reps` : `${exDetail.duration_seconds} seconds`}`;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.onclick = () => {
+                newSessionExercises.splice(index, 1);
+                renderNewSessionExercises(); // Re-render the list
+            };
+            listItem.appendChild(removeBtn);
+            
+            list.appendChild(listItem);
+        }
+    });
+    container.appendChild(list);
 }
